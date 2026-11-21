@@ -56,3 +56,26 @@ func TestTranslateSeriesV1SkipsNullPoints(t *testing.T) {
 		})
 	}
 }
+
+// An entirely invalid submission must also be safe: no data point should be emitted.
+func TestTranslateSeriesV1OnlyNullPoints(t *testing.T) {
+	for _, metricType := range []string{TypeGauge, TypeCount, TypeRate} {
+		t.Run(metricType, func(t *testing.T) {
+			ts, value := float64(1636629071), 3.5
+			seriesType := metricType
+			input := SeriesList{Series: []datadogV1.Series{{
+				Metric: "probe.only_null",
+				Type:   &seriesType,
+				Points: [][]*float64{
+					{nil, &value},
+					{&ts, nil},
+					{nil, nil},
+					{},
+				},
+			}}}
+
+			got := createMetricsTranslator().TranslateSeriesV1(input)
+			require.Zero(t, got.DataPointCount())
+		})
+	}
+}
