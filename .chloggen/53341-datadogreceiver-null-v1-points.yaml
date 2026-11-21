@@ -1,0 +1,11 @@
+change_type: bug_fix
+
+component: receiver/datadog
+
+note: Skip malformed Datadog v1 metric points with null timestamps or values instead of panicking.
+
+issues: [53341]
+
+subtext:
+
+change_logs: [user]

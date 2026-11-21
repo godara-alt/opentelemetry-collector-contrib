@@ -95,8 +95,8 @@ func (mt *MetricsTranslator) TranslateSeriesV1(series SeriesList) pmetric.Metric
 		// We need to flatten this to a slice of *float64 to work with it. And we know that in that slice, the first
 		// element is the timestamp and the second is the value.
 		for _, points := range serie.Points {
-			if len(points) != 2 {
-				continue // The datapoint is missing a timestamp and/or value, so this point should be skipped
+			if len(points) != 2 || points[0] == nil || points[1] == nil {
+				continue // Skip points with missing or null timestamps/values before dereferencing.
 			}
 			ts = int64(*points[0])
 			value = *points[1]
